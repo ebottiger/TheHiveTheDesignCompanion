@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Hive – Design Companion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+:root{
+  --gold:#F5A623;--dark:#1A1A2E;
+  --bts-teal:#1D7279;--bts-blue:#1C4C86;--bts-dark:#24282B;
+  --s1:#1C4C86;--s2:#CA1C68;--s3:#1D7279;--s4:#4C3480;--s5:#E63F4F;--s6:#1A7A4A;
+  --border:#DDD5C8;--surface:#F8F6F1;--cream:#FDFAF5;--r:8px;--sh:0 2px 12px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--bts-dark);font-size:14px;min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{background:var(--dark);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.logo{display:flex;align-items:center;gap:11px}
+.logo-hex{width:36px;height:36px;background:var(--gold);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:12px;font-weight:900;color:var(--dark)}
+.logo-t .logo-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.1}
+.logo-t .logo-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.hdr-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ai-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(255,255,255,.75);cursor:pointer;transition:.2s;white-space:nowrap}
+.ai-pill:hover{background:rgba(255,255,255,.12)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#6b7280;transition:.2s}
+.ai-dot.on{background:#34d399}
+.hbtn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;transition:.18s;white-space:nowrap}
+.hbtn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)}.hbtn-ghost:hover{background:rgba(255,255,255,.1)}
+.hbtn-gold{background:var(--gold);color:var(--dark)}.hbtn-gold:hover{background:#daa218}
+.hbtn-teal{background:var(--bts-teal);color:#fff}.hbtn-teal:hover{background:#155e63}
+.save-pill{font-size:11px;color:#10b981;display:none;align-items:center;gap:3px;background:#d1fae5;padding:3px 9px;border-radius:10px}
+.save-pill.show{display:flex}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal-box{background:#fff;border-radius:12px;padding:28px;width:460px;max-width:94vw;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:mIn .22s ease;max-height:90vh;overflow-y:auto}
+@keyframes mIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-box h2{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:12px;color:#777;margin-bottom:20px;line-height:1.6}
+.ms{margin-bottom:16px}
+.ms label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#555;margin-bottom:6px}
+.ms input,.ms select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--surface)}
+.ms input:focus,.ms select:focus{outline:none;border-color:var(--bts-blue)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.tog-row:last-child{border-bottom:none}
+.tog-lbl{font-size:13px;font-weight:500}.tog-desc{font-size:11px;color:#888;margin-top:1px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.ttrack{position:absolute;inset:0;background:#ddd;border-radius:11px;transition:.2s}
+.toggle input:checked+.ttrack{background:var(--bts-teal)}
+.tknob{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked~.tknob{transform:translateX(18px)}
+.m-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.mbtn{padding:8px 18px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;transition:.18s}
+.mbtn-save{background:var(--bts-blue);color:#fff}.mbtn-save:hover{background:#163d6e}
+.mbtn-cancel{background:var(--surface);color:#444;border:1.5px solid var(--border)}
+
+/* ── TABS ── */
+.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;position:sticky;top:61px;z-index:190;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.tabs::-webkit-scrollbar{height:0}
+.tab{padding:12px 16px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s;flex-shrink:0;user-select:none}
+.tn{width:19px;height:19px;border-radius:50%;background:#eee;color:#999;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:.2s}
+.tab.done{color:#666}.tab.done .tn{background:#d1fae5;color:#065f46}
+.tab[data-s="1"].active{border-bottom-color:var(--s1);color:var(--s1)}.tab[data-s="1"].active .tn{background:var(--s1);color:#fff}
+.tab[data-s="2"].active{border-bottom-color:var(--s2);color:var(--s2)}.tab[data-s="2"].active .tn{background:var(--s2);color:#fff}
+.tab[data-s="3"].active{border-bottom-color:var(--s3);color:var(--s3)}.tab[data-s="3"].active .tn{background:var(--s3);color:#fff}
+.tab[data-s="4"].active{border-bottom-color:var(--s4);color:var(--s4)}.tab[data-s="4"].active .tn{background:var(--s4);color:#fff}
+.tab[data-s="5"].active{border-bottom-color:var(--s5);color:var(--s5)}.tab[data-s="5"].active .tn{background:var(--s5);color:#fff}
+.tab[data-s="6"].active{border-bottom-color:var(--s6);color:var(--s6)}.tab[data-s="6"].active .tn{background:var(--s6);color:#fff}
+.tab[data-s="summary"].active{border-bottom-color:var(--bts-teal);color:var(--bts-teal)}.tab[data-s="summary"].active .tn{background:var(--bts-teal);color:#fff}
+.tab-sum{margin-left:auto}
+
+/* ── EXPORT BAR (per-step) ── */
+.export-bar{
+  background:#fff;border:1px solid var(--border);border-radius:8px;
+  padding:10px 16px;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  box-shadow:0 1px 6px rgba(0,0,0,.05);
+}
+.export-bar-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;display:flex;align-items:center;gap:6px}
+.export-btns{display:flex;gap:7px;flex-wrap:wrap}
+.exp-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;transition:.17s;display:flex;align-items:center;gap:5px}
+.exp-print{background:#f0f4ff;color:var(--bts-blue);border:1px solid #c7d7ff}.exp-print:hover{background:#dce8ff}
+.exp-summary{background:#f0fdf4;color:var(--s6);border:1px solid #bbf7d0}.exp-summary:hover{background:#dcfce7}
+.exp-pdf{background:var(--s6);color:#fff}.exp-pdf:hover{background:#145e38}
+
+/* ── MAIN ── */
+.main{max-width:1060px;margin:0 auto;padding:28px 20px 90px}
+.page{display:none;animation:fu .26s ease}
+.page.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── STEP HEADER ── */
+.shdr{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:2px solid var(--border)}
+.sbadge{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.smeta{flex:1}
+.seyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:3px;opacity:.4;margin-bottom:2px}
+.stitle{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;line-height:1.1}
+.sdesc{font-size:12px;color:#666;margin-top:4px;line-height:1.6;max-width:560px}
+
+/* ── AI BAR ── */
+.ai-bar{background:linear-gradient(135deg,#f0ecff,#e8f0ff);border:1.5px solid #c4b5fd;border-radius:var(--r);padding:12px 15px;margin-bottom:18px;display:none}
+.ai-bar.on{display:block}
+.ab-top{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.ab-lbl{font-size:12px;font-weight:700;color:#5b21b6}
+.ab-btns{display:flex;gap:6px;flex-wrap:wrap}
+.ab-btn{padding:5px 12px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:11px;transition:.16s}
+.ab-gen{background:linear-gradient(135deg,#7B3F9E,#1C4C86);color:#fff}.ab-gen:hover{opacity:.9}
+.ab-clr{background:rgba(91,33,182,.1);color:#5b21b6;border:1px solid rgba(91,33,182,.2)}
+.ai-out{background:#fff;border-radius:6px;padding:12px 14px;font-size:13px;line-height:1.75;margin-top:10px;display:none;white-space:pre-wrap}
+.ai-out.has{display:block}
+.ai-load{display:flex;align-items:center;gap:7px;color:#7c3aed;font-style:italic;font-size:12px}
+.dots{display:inline-flex;gap:3px}.dots span{width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:bk 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bk{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* ── FIELD AI ── */
+.fwrap{position:relative}
+.fai{position:absolute;right:7px;bottom:7px;padding:3px 8px;border-radius:10px;border:1px solid rgba(91,33,182,.25);background:rgba(91,33,182,.07);color:#5b21b6;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;cursor:pointer;transition:.15s;display:none}
+.fai:hover{background:rgba(91,33,182,.14)}
+body.ai-fields .fai{display:block}
+body.ai-fields .fwrap textarea{padding-bottom:30px}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh);border:1px solid var(--border)}
+.ctitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;padding-bottom:9px;border-bottom:2px solid currentColor;display:flex;align-items:center;gap:6px}
+
+/* ── FORMS ── */
+.fg{margin-bottom:14px}.fg:last-child{margin-bottom:0}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;color:#555}
+.fh{font-size:11px;color:#888;font-style:italic;margin-top:3px;line-height:1.5;margin-bottom:5px}
+input[type=text],textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--bts-dark);background:var(--surface);transition:.17s;resize:vertical}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--bts-blue);box-shadow:0 0 0 3px rgba(28,76,134,.1);background:#fff}
+textarea{min-height:84px}
+textarea.tall{min-height:114px}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}.main{padding:16px 12px 86px}}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--dark);color:#fff;padding:9px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;text-align:left}
+.tbl td{padding:5px;border:1px solid var(--border);vertical-align:top}
+.tbl .rlbl{background:var(--surface);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#666;width:106px;padding:8px}
+.tbl td textarea{min-height:62px;font-size:12px;border:1px solid #e5ddd4;background:#fff;min-width:120px}
+.ctbl{width:100%;border-collapse:collapse}
+.ctbl th{background:var(--dark);color:#fff;padding:9px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;text-align:left}
+.ctbl td{padding:6px 8px;border:1px solid var(--border);vertical-align:top}
+.ctbl tr:nth-child(even) td{background:#faf8f5}
+.ctbl .ttype{background:var(--surface);font-weight:700;font-size:12px;width:108px}
+.ctbl td textarea{min-height:52px;font-size:12px;border:1px solid #ddd;background:#fff}
+
+/* ── PERSONA ── */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.pbox{background:var(--surface);border-radius:6px;padding:13px;border:1.5px solid var(--border)}
+.pbox.full{grid-column:1/-1}
+@media(max-width:580px){.pgrid{grid-template-columns:1fr}}
+
+/* ── TRIO ── */
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.tcard{background:#fff;border-radius:8px;padding:14px;border:2px solid var(--border)}
+.tcard.me{border-top:4px solid var(--s1)}.tcard.us{border-top:4px solid var(--s3)}.tcard.it{border-top:4px solid var(--gold)}
+.tname{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:2px}
+.tdesc{font-size:11px;color:#888;margin-bottom:8px;line-height:1.4}
+@media(max-width:660px){.trio{grid-template-columns:1fr}}
+
+/* ── HERO JOURNEY ── */
+.hjg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.hjc{border-radius:8px;padding:12px;border:1.5px solid var(--border)}
+.hjl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.hjc textarea{min-height:76px;font-size:12px}
+@media(max-width:660px){.hjg{grid-template-columns:1fr 1fr}}
+
+/* ── THIRDS ── */
+.thg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.thb{border-radius:8px;padding:14px;border:1.5px solid var(--border)}
+.tht{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+@media(max-width:660px){.thg{grid-template-columns:1fr}}
+
+/* ── ARCH FEEDBACK ── */
+.archg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.archb{background:#fff;border-radius:8px;padding:14px;border:2px solid var(--border)}
+.archb.set{border-top:3px solid var(--s1)}.archb.hold{border-top:3px solid var(--gold)}.archb.land{border-top:3px solid var(--s3)}
+.archt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+@media(max-width:660px){.archg{grid-template-columns:1fr}}
+
+/* ── TOUCHPOINTS ── */
+.tpc{border:1.5px solid var(--border);border-radius:8px;padding:14px;margin-bottom:11px;background:#fff;border-left:4px solid var(--s4)}
+.tph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tpn{font-size:13px;font-weight:700;color:var(--s4)}
+.tprem{background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;padding:3px 6px}
+.add-tp{display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:6px;border:2px dashed var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#999;width:100%;transition:.17s;margin-top:4px}
+.add-tp:hover{border-color:var(--s4);color:var(--s4);background:#f5f0ff}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:11px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 14px rgba(0,0,0,.07);z-index:190}
+.ninfo{font-size:12px;color:#888}.ninfo strong{color:var(--bts-dark)}
+.nbtns{display:flex;gap:8px}
+.nbtn{padding:9px 20px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;transition:.17s}
+.nprev{background:var(--surface);color:var(--bts-dark);border:1.5px solid var(--border)}.nprev:hover{background:var(--border)}
+.nnext{background:var(--bts-blue);color:#fff}.nnext:hover{background:#163d6e}
+.nsum{background:var(--s3);color:#fff}.nsum:hover{background:#155e63}
+
+/* ── MISC ── */
+.divrow{display:flex;align-items:center;gap:10px;margin:16px 0 12px}
+.divrow span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#bbb;white-space:nowrap}
+.divrow::before,.divrow::after{content:'';flex:1;height:1px;background:var(--border)}
+.warn{background:#fffbeb;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:10px 14px;font-size:12px;line-height:1.6;margin-bottom:12px}
+.fcta{background:linear-gradient(135deg,var(--s3),var(--s1));border-radius:10px;padding:26px;text-align:center;color:#fff;margin-top:18px}
+.fcta h2{font-family:'Playfair Display',serif;font-size:21px;margin:7px 0 4px}
+.fcta p{font-size:13px;opacity:.85;margin-bottom:18px;line-height:1.6}
+.fcta-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.fcta-btn{padding:10px 24px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;transition:.17s}
+
+/* ── SUMMARY ── */
+.sc{background:#fff;border-radius:var(--r);padding:20px 22px;margin-bottom:14px;border:1px solid var(--border);page-break-inside:avoid}
+.sbadge2{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:14px;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
+.stitle2{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:12px}
+.sf{margin-bottom:9px}
+.sfl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#bbb;margin-bottom:2px}
+.sfv{font-size:13px;line-height:1.6;white-space:pre-wrap}
+.stbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+.stbl th{background:var(--dark);color:#fff;padding:6px 8px;text-align:left}
+.stbl td{padding:6px 8px;border:1px solid #ddd;vertical-align:top}
+.stbl td:first-child{background:var(--surface);font-weight:600}
+
+/* ── PRINT ── */
+@media print{
+  .hdr,.tabs,.nav,.modal-ov,.ai-bar,.fai,.export-bar,.fcta,.hbtn,.ai-pill,.save-pill{display:none!important}
+  .page{display:none!important}
+  #summaryPage{display:block!important}
+  .main{max-width:100%;padding:0}
+  .sc{box-shadow:none;border:1px solid #ccc;margin-bottom:10px}
+  body{background:#fff;font-size:12px}
+  @page{margin:1.4cm}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-hex">H</div>
+    <div class="logo-t">
+      <div class="logo-name">The Hive</div>
+      <div class="logo-sub">Design Companion</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="save-pill" id="savePill">✓ Saved</div>
+    <div class="ai-pill" id="aiPill" onclick="openModal()">
+      <div class="ai-dot" id="aiDot"></div>
+      <span id="aiLbl">AI: Off</span>
+    </div>
+    <button class="hbtn hbtn-ghost" onclick="showSummary()">📄 Summary</button>
+    <button class="hbtn hbtn-teal" onclick="printPage()">🖨 Print / PDF</button>
+  </div>
+</header>
+
+<!-- AI MODAL -->
+<div class="modal-ov" id="aiModal" onclick="modalOverlayClick(event)">
+  <div class="modal-box">
+    <h2>AI Assistant Settings</h2>
+    <div class="modal-sub">Works with both Claude and ChatGPT. Your API key is stored only in your browser session and sent only to the provider you choose.</div>
+    <div class="ms">
+      <div class="tog-row">
+        <div><div class="tog-lbl">Enable AI Assistance</div><div class="tog-desc">Show AI suggestion buttons throughout the tool</div></div>
+        <label class="toggle"><input type="checkbox" id="togEnabled" onchange="onTogEnabled()"><div class="ttrack"></div><div class="tknob"></div></label>
+      </div>
+    </div>
+    <div id="aiExtra" style="display:none">
+      <div class="ms"><label>AI Provider</label>
+        <select id="aiProv" onchange="onProvChange()">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="chatgpt">ChatGPT (OpenAI)</option>
+        </select>
+      </div>
+      <div class="ms">
+        <label id="keyLbl">Anthropic API Key</label>
+        <input type="text" id="apiKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        <div class="fh" id="keyHint">Stored in browser session only. Sent only to api.anthropic.com.</div>
+      </div>
+      <div class="ms">
+        <div class="tog-row">
+          <div><div class="tog-lbl">Step-level suggestions</div><div class="tog-desc">AI panel at the top of each step</div></div>
+          <label class="toggle"><input type="checkbox" id="togStep" checked><div class="ttrack"></div><div class="tknob"></div></label>
+        </div>
+        <div class="tog-row">
+          <div><div class="tog-lbl">Field-level suggestions</div><div class="tog-desc">✦ Suggest buttons inside text areas</div></div>
+          <label class="toggle"><input type="checkbox" id="togField" checked><div class="ttrack"></div><div class="tknob"></div></label>
+        </div>
+      </div>
+    </div>
+    <div class="m-actions">
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="mbtn mbtn-save" onclick="saveConfig()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tabs" id="tabBar">
+  <div class="tab active" data-s="1" onclick="go(1)"><span class="tn">1</span>Define</div>
+  <div class="tab" data-s="2" onclick="go(2)"><span class="tn">2</span>The Learning</div>
+  <div class="tab" data-s="3" onclick="go(3)"><span class="tn">3</span>Design Journey</div>
+  <div class="tab" data-s="4" onclick="go(4)"><span class="tn">4</span>Experience</div>
+  <div class="tab" data-s="5" onclick="go(5)"><span class="tn">5</span>Review Design</div>
+  <div class="tab" data-s="6" onclick="go(6)"><span class="tn">6</span>Deliver</div>
+  <div class="tab tab-sum" data-s="summary" onclick="showSummary()"><span class="tn">★</span>Summary</div>
+</nav>
+
+<main class="main">
+
+<!-- ══════ STEP 1 ══════ -->
+<section class="page active" id="step1">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s1)">1</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s1)">Goals & Content</div>
+      <div class="stitle">Define</div>
+      <div class="sdesc">Clarify organizational goals, business results, on-the-job behaviors, and build a rich learner persona.</div>
+    </div>
+  </div>
+
+  <!-- Export Bar -->
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 1</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(1)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+
+  <!-- AI Bar -->
+  <div class="ai-bar" id="aib1">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 1: Define</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(1)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(1)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio1"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s1)">📋 Project Information</div>
+    <div class="g2">
+      <div class="fg"><label class="fl">Account Manager Name</label><input type="text" id="amName" placeholder="Your name" oninput="autosave()"></div>
+      <div class="fg"><label class="fl">Client / Project Name</label><input type="text" id="projectName" placeholder="Client & project" oninput="autosave()"></div>
+      <div class="fg"><label class="fl">Client Stakeholder & Position</label><input type="text" id="clientStakeholder" placeholder="Name, title" oninput="autosave()"></div>
+      <div class="fg"><label class="fl">Learning Journey Title</label><input type="text" id="journeyTitle" placeholder="Name this journey" oninput="autosave()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s1)">🗺 Core Curriculum Impact Map</div>
+    <div class="fg fwrap">
+      <label class="fl">Organizational Goals</label>
+      <p class="fh">The strategic goals and ambitions participants are supporting</p>
+      <textarea id="orgGoals" placeholder="The strategic goals and ambitions participants are supporting are..." oninput="autosave()"></textarea>
+      <button class="fai" onclick="fai('orgGoals','Suggest organizational goals for a corporate learning program')">✦ Suggest</button>
+    </div>
+    <div class="fg fwrap">
+      <label class="fl">Key Business Results</label>
+      <textarea id="bizResults" placeholder="The measurable results that participants are driving at their level are..." oninput="autosave()"></textarea>
+      <button class="fai" onclick="fai('bizResults','Suggest key measurable business results tied to a learning journey')">✦ Suggest</button>
+    </div>
+    <div class="fg fwrap">
+      <label class="fl">Critical On-the-Job Behaviors</label>
+      <textarea id="jobBehaviors" placeholder="Back on the job, participants will..." oninput="autosave()"></textarea>
+      <button class="fai" onclick="fai('jobBehaviors','Suggest critical on-the-job behaviors for learning transfer in a corporate program')">✦ Suggest</button>
+    </div>
+    <div class="g2">
+      <div class="fg fwrap">
+        <label class="fl">Critical Enablers</label>
+        <p class="fh">Successful experience means that participants…</p>
+        <textarea id="criticalEnablers" placeholder="Successful experience means that participants..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('criticalEnablers','What are critical enablers for a successful learning experience')">✦ Suggest</button>
+      </div>
+      <div class="fg fwrap">
+        <label class="fl">Targeted Experience</label>
+        <p class="fh">Concepts, activities, and tools participants will experience</p>
+        <textarea id="targetedExp" placeholder="Participants will experience the following concepts/activities/tools..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('targetedExp','Suggest targeted learning activities and tools for a corporate training program')">✦ Suggest</button>
+      </div>
+    </div>
+    <div class="fg fwrap">
+      <label class="fl">How Will the Learning Culture Impact Design?</label>
+      <p class="fh">Current beliefs towards learning in the organization that could impact our design</p>
+      <textarea id="learningCulture" placeholder="The current beliefs towards learning in the organization could impact our design in the following ways..." oninput="autosave()"></textarea>
+      <button class="fai" onclick="fai('learningCulture','How does organizational learning culture impact learning design choices')">✦ Suggest</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s1)">👤 Learner Persona</div>
+    <div class="warn">⚠️ <strong>Reminder:</strong> Learner personas should be based on interviews with actual people who are the focus of the learning.</div>
+    <div class="pgrid">
+      <div class="pbox"><label class="fl">Role & Responsibilities</label><textarea id="personaRole" placeholder="Their role and core responsibilities..." oninput="autosave()"></textarea></div>
+      <div class="pbox"><label class="fl">Challenges & Needs</label><textarea id="personaChallenges" placeholder="Key challenges they face and what they need..." oninput="autosave()"></textarea></div>
+      <div class="pbox"><label class="fl">Work Environment</label><textarea id="personaEnv" placeholder="Their typical work setting, pace, constraints..." oninput="autosave()"></textarea></div>
+      <div class="pbox"><label class="fl">Focus of Intervention & Learning</label><textarea id="personaFocus" placeholder="What should the learning focus on for them?" oninput="autosave()"></textarea></div>
+      <div class="pbox full"><label class="fl">Current Learning Culture & Experiences</label><textarea id="personaCulture" placeholder="What learning have they experienced? What's the norm around learning?" oninput="autosave()"></textarea></div>
+      <div class="pbox full"><label class="fl">Learning Preferences</label><textarea id="personaPrefs" placeholder="How do they prefer to learn? (e.g. self-paced, collaborative, hands-on...)" oninput="autosave()"></textarea></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STEP 2 ══════ -->
+<section class="page" id="step2">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s2)">2</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s2)">Plan & Tactics</div>
+      <div class="stitle">The Learning</div>
+      <div class="sdesc">How will success and learning be received, introduced, maintained, learned, and continued?</div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 2</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(2)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div class="ai-bar" id="aib2">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 2: The Learning</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(2)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(2)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio2"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s2)">🗂 Learning Journey Phase Matrix</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Read left to right, top to bottom. Fill in each row for each phase of the journey.</p>
+    <div style="overflow-x:auto">
+      <table class="tbl"><thead><tr>
+        <th style="min-width:106px">Dimension</th>
+        <th style="min-width:140px">🌟 EXCITEMENT<br><small style="font-weight:400;font-size:9px">Awareness & attraction</small></th>
+        <th style="min-width:140px">🚪 ENTRY<br><small style="font-weight:400;font-size:9px">Entering the experience</small></th>
+        <th style="min-width:140px">🔥 ENGAGE<br><small style="font-weight:400;font-size:9px">Community & practice</small></th>
+        <th style="min-width:140px">🏁 EXIT<br><small style="font-weight:400;font-size:9px">Clear end of experience</small></th>
+        <th style="min-width:140px">🌱 EXTENSION<br><small style="font-weight:400;font-size:9px">Mementos, next steps</small></th>
+      </tr></thead><tbody id="jtBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s2)">🎯 Purpose of the Journey</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">How will you create a cohesive learning experience that is relevant, actionable and measurable?</p>
+    <div class="g2">
+      <div class="fg fwrap"><label class="fl">Anchor to Purpose</label><p class="fh">Why are learners and the org embarking on this journey?</p>
+        <textarea id="anchorPurpose" class="tall" placeholder="The purpose of this journey is..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('anchorPurpose','Write an anchor to purpose statement for a corporate learning journey')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Define Your Outcomes</label><p class="fh">What will learners be able to do/achieve with each touchpoint?</p>
+        <textarea id="defineOutcomes" class="tall" placeholder="After each touchpoint, learners will be able to..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('defineOutcomes','Write learning outcomes for a corporate training journey')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Build the Right Learning Journey</label><p class="fh">Based on learning culture and learners' constraints</p>
+        <textarea id="buildJourney" placeholder="Given the constraints and culture, the journey will be structured as..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('buildJourney','How to structure a blended learning journey given organizational constraints')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Contextualize</label><p class="fh">Make it relevant and applicable for the learner</p>
+        <textarea id="contextualize" placeholder="To make this relevant, we will..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('contextualize','How to contextualize learning content for adult learners in a corporate setting')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">The Call to Adventure</label><p class="fh">How will you set the stage, hold the space, land the learning?</p>
+        <textarea id="callAdventure" placeholder="We will open the experience by..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('callAdventure','Write a compelling call to adventure to open a corporate learning experience')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">How Will You Set Context</label><p class="fh">Setting context and attaching to purpose at each touchpoint</p>
+        <textarea id="setContext" placeholder="At each touchpoint we will set context by..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('setContext','How to set context and attach to purpose at the start of each learning touchpoint')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Sustain Learning</label><p class="fh">How will you hold the learning between touchpoints?</p>
+        <textarea id="sustainLearning" placeholder="Between touchpoints, we will sustain learning by..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('sustainLearning','Methods to sustain and reinforce learning between training sessions')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">How Will You Land?</label><p class="fh">Landing on content, facilitation, tools, exercises, and measurement levels</p>
+        <textarea id="howLand" placeholder="We will land the learning by..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('howLand','How to effectively land and close a learning experience including measurement')">✦ Suggest</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STEP 3 ══════ -->
+<section class="page" id="step3">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s3)">3</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s3)">Concepting</div>
+      <div class="stitle">Design the Journey</div>
+      <div class="sdesc">Design a cohesive, relevant, and measurable learning experience tailored to your learners and context.</div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 3</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(3)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div class="ai-bar" id="aib3">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 3: Design the Journey</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(3)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(3)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio3"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s3)">👥 Step 3 Team</div>
+    <div class="g3">
+      <div class="fg"><label class="fl">SME Names</label><input type="text" id="smeNames" placeholder="Subject matter experts" oninput="autosave()"></div>
+      <div class="fg"><label class="fl">PL / Dev Team</label><input type="text" id="plDevTeam" placeholder="Project lead & dev team" oninput="autosave()"></div>
+      <div class="fg"><label class="fl">Client Stakeholder</label><input type="text" id="s3Stakeholder" placeholder="Client stakeholder" oninput="autosave()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s3)">⚖️ Individual vs Group vs Leader-Led Learning</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">All 3 are needed within design. How much of each does this journey require?</p>
+    <div class="trio">
+      <div class="tcard me">
+        <div class="tname" style="color:var(--s1)">Me</div>
+        <div class="tdesc">How much <strong>individual</strong> learning is needed?<br>Modalities: Self-paced modules</div>
+        <textarea id="meModality" placeholder="Individual learning components..." oninput="autosave()"></textarea>
+      </div>
+      <div class="tcard us">
+        <div class="tname" style="color:var(--s3)">Us</div>
+        <div class="tdesc">How much <strong>group/team</strong> learning is needed?<br>Modalities: Workshops, Pods</div>
+        <textarea id="usModality" placeholder="Group learning components..." oninput="autosave()"></textarea>
+      </div>
+      <div class="tcard it">
+        <div class="tname" style="color:#92400e">It</div>
+        <div class="tdesc">How much <strong>leader-owned/led</strong> learning is needed?<br>Modalities: Go-Dos, Leader-led</div>
+        <textarea id="itModality" placeholder="Leader-led components..." oninput="autosave()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s3)">🧰 Modalities, Methods & Frameworks</div>
+    <div class="g2">
+      <div class="fg fwrap"><label class="fl">Learning Modalities</label><p class="fh">Digital self-paced, vILT, F2F — which and when?</p>
+        <textarea id="learningModalities" placeholder="e.g. Pre-work: digital self-paced (30 min), vILT workshop (2hr)..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('learningModalities','Suggest a learning modality mix for a blended corporate learning journey')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Hexagons, Frameworks & Methods</label><p class="fh">E.g. Design thinking, BA1/2, assessments, coaching models, leadership frameworks</p>
+        <textarea id="frameworks" placeholder="Key frameworks and tools you'll use..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('frameworks','Suggest learning frameworks and methods for a corporate leadership development program')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Exercises / Ideas for Execution</label><p class="fh">Choose 3 powerful icebreakers, sims, or go-dos that embody the targets</p>
+        <textarea id="exercises" class="tall" placeholder="1. ...&#10;2. ...&#10;3. ..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('exercises','Suggest 3 powerful learning exercises or simulations for a corporate training program')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Creative Transitions & Loops Between Arches</label><p class="fh">Powerful landings, reconnect with purpose, gamification, feeding forward</p>
+        <textarea id="transitions" class="tall" placeholder="Ideas for connecting and transitioning between touchpoints..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('transitions','Creative ways to transition between learning touchpoints and sustain engagement')">✦ Suggest</button></div>
+    </div>
+    <div class="fg fwrap" style="margin-top:4px"><label class="fl">Advice for Facilitating the Learning Journey</label><p class="fh">Advice to the host/facilitator/leader for setting, holding, and landing the space</p>
+      <textarea id="facilitationAdvice" placeholder="Key facilitation advice for this journey..." oninput="autosave()"></textarea>
+      <button class="fai" onclick="fai('facilitationAdvice','Write facilitation advice for leading a corporate learning journey')">✦ Suggest</button></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s3)">📦 Content Components — Chosen / Developed / Customized</div>
+    <p style="font-size:12px;color:#666;margin-bottom:11px">Indicate what you will Contextualize ($), Customize ($$), or Develop from scratch ($$$).</p>
+    <div style="overflow-x:auto">
+    <table class="ctbl"><thead><tr>
+      <th>Content Type</th><th>Impact / Purpose</th><th>Contextualize $</th><th>Customize $$</th><th>Develop $$$</th>
+    </tr></thead><tbody>
+      <tr><td class="ttype">🎯 Acquire</td><td style="font-size:11px;color:#555">Help learners <strong>gain knowledge</strong> about a topic or skill.</td>
+        <td><textarea id="acquire_ctx" placeholder="e.g. Demos, Tutorials..." oninput="autosave()"></textarea></td>
+        <td><textarea id="acquire_cust" placeholder="e.g. Micro-learning..." oninput="autosave()"></textarea></td>
+        <td><textarea id="acquire_dev" placeholder="e.g. Simulations..." oninput="autosave()"></textarea></td></tr>
+      <tr><td class="ttype">💪 Apply / Evaluate / Reflect</td><td style="font-size:11px;color:#555">Help learners <strong>apply, practice, evaluate and reflect</strong> on a skill.</td>
+        <td><textarea id="apply_ctx" placeholder="e.g. Knowledge Checks, Go-Dos..." oninput="autosave()"></textarea></td>
+        <td><textarea id="apply_cust" placeholder="e.g. Digital tools, AI Bots..." oninput="autosave()"></textarea></td>
+        <td><textarea id="apply_dev" placeholder="e.g. AI Coaching, Sims..." oninput="autosave()"></textarea></td></tr>
+      <tr><td class="ttype">🔔 Trigger</td><td style="font-size:11px;color:#555"><strong>Nudge learners</strong> with triggers or cues — keep momentum alive.</td>
+        <td><textarea id="trigger_ctx" placeholder="e.g. Messages, Questions..." oninput="autosave()"></textarea></td>
+        <td><textarea id="trigger_cust" placeholder="e.g. Testimonials, Infographics..." oninput="autosave()"></textarea></td>
+        <td><textarea id="trigger_dev" placeholder="e.g. AI Coaching..." oninput="autosave()"></textarea></td></tr>
+      <tr><td class="ttype">🤝 Support</td><td style="font-size:11px;color:#555"><strong>Support learners</strong> through their journey to mastery.</td>
+        <td><textarea id="support_ctx" placeholder="e.g. Refresher Videos, Communities..." oninput="autosave()"></textarea></td>
+        <td><textarea id="support_cust" placeholder="e.g. Digital tools, AI Bots..." oninput="autosave()"></textarea></td>
+        <td><textarea id="support_dev" placeholder="e.g. Playbooks..." oninput="autosave()"></textarea></td></tr>
+    </tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STEP 4 ══════ -->
+<section class="page" id="step4">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s4)">4</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s4)">Design the Experience</div>
+      <div class="stitle">Journey Visualization</div>
+      <div class="sdesc">Map each touchpoint in sequence from the opening orientation through to leader-led sessions.</div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 4</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(4)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div class="ai-bar" id="aib4">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 4: Journey Visualization</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(4)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(4)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio4"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s4)">📍 Learning Journey Touchpoints</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Add each touchpoint in sequence. Fill in type, timing, objectives, activities, and how you'll land it.</p>
+    <div id="tpCont"></div>
+    <button class="add-tp" onclick="addTP()">＋ Add Touchpoint</button>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s4)">🌊 Overall Journey Arc</div>
+    <div class="g3">
+      <div class="fg fwrap"><label class="fl">📣 Setting the Arch</label><p class="fh">How will you open and set the stage for the whole journey?</p>
+        <textarea id="settingArch" class="tall" placeholder="Opening strategy..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('settingArch','How to effectively set the arch and open a corporate learning journey')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">🔥 Holding the Arch</label><p class="fh">How will you maintain energy and momentum throughout?</p>
+        <textarea id="holdingArch" class="tall" placeholder="Holding strategy..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('holdingArch','How to hold the arch and sustain energy throughout a corporate learning journey')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">🏁 Landing the Arch</label><p class="fh">How will you close and embed the learning?</p>
+        <textarea id="landingArch" class="tall" placeholder="Landing strategy..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('landingArch','How to land the arch and embed learning at the close of a journey')">✦ Suggest</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STEP 5 ══════ -->
+<section class="page" id="step5">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s5)">5</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s5)">From the Learner's Perspective</div>
+      <div class="stitle">Review Design</div>
+      <div class="sdesc">Evaluate the design through the Hero's Journey lens and apply the Rule of Thirds for balance.</div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 5</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(5)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div class="ai-bar" id="aib5">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 5: Review Design</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(5)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(5)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio5"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s5)">🦸 The Learner's Hero Journey</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Map your learning experience to these 8 stages from the learner's perspective.</p>
+    <div class="hjg">
+      <div class="hjc" style="background:#e8f4ff;border-color:#b3d4ff"><div class="hjl" style="color:var(--s1)">1 — YOU<br><em style="font-weight:400;text-transform:none;font-size:10px">Comfort zone</em></div><textarea id="hj_you" placeholder="Where do learners start?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#fffbeb;border-color:#fcd34d"><div class="hjl" style="color:#92400e">2 — NEED<br><em style="font-weight:400;text-transform:none;font-size:10px">Something isn't right</em></div><textarea id="hj_need" placeholder="What problem triggers the learning?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#ecfdf5;border-color:#6ee7b7"><div class="hjl" style="color:var(--s3)">3 — GO<br><em style="font-weight:400;text-transform:none;font-size:10px">Stepping out</em></div><textarea id="hj_go" placeholder="What is the call to action?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#f5f3ff;border-color:#c4b5fd"><div class="hjl" style="color:var(--s4)">4 — SEARCH<br><em style="font-weight:400;text-transform:none;font-size:10px">Road of trials</em></div><textarea id="hj_search" placeholder="What challenges do they face?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#fff1f2;border-color:#fda4af"><div class="hjl" style="color:var(--s5)">5 — FIND<br><em style="font-weight:400;text-transform:none;font-size:10px">Realising the problem</em></div><textarea id="hj_find" placeholder="What key insight do they arrive at?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#e8f4ff;border-color:#93c5fd"><div class="hjl" style="color:var(--s1)">6 — TAKE<br><em style="font-weight:400;text-transform:none;font-size:10px">Paying the price</em></div><textarea id="hj_take" placeholder="What action do they take?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#ecfdf5;border-color:#6ee7b7"><div class="hjl" style="color:var(--s3)">7 — RETURN<br><em style="font-weight:400;text-transform:none;font-size:10px">Bringing it home</em></div><textarea id="hj_return" placeholder="How do they bring learning back?" oninput="autosave()"></textarea></div>
+      <div class="hjc" style="background:#fffbeb;border-color:#fcd34d"><div class="hjl" style="color:#92400e">8 — CHANGE<br><em style="font-weight:400;text-transform:none;font-size:10px">Master both worlds</em></div><textarea id="hj_change" placeholder="What transformation do they embody?" oninput="autosave()"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s5)">⅓ The Rule of Thirds</div>
+    <div class="warn">Every touchpoint should include all three areas:<br>
+      <strong>Structure & Flow:</strong> Setting → Holding → Landing &nbsp;|&nbsp;
+      <strong>Development:</strong> Mindset → Knowledge/Skills → Behavior &nbsp;|&nbsp;
+      <strong>Perspectives:</strong> Me → Us → It
+    </div>
+    <div class="divrow"><span>Learning Arch Design Steps</span></div>
+    <div class="thg">
+      <div class="thb" style="background:#e8f4ff;border-color:#93c5fd">
+        <div class="tht" style="color:var(--s1)">Column 1 — Learner Start & Mindset</div>
+        <div class="fg"><label class="fl" style="font-size:10px">Where coming from / Where going?</label><textarea id="t1_q1" placeholder="Starting context and destination..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Mindsets held / Mindsets needed?</label><textarea id="t1_q2" placeholder="Current vs needed mindsets..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">When should ME be present?</label><textarea id="t1_q3" placeholder="ME perspective moments..." oninput="autosave()"></textarea></div>
+      </div>
+      <div class="thb" style="background:#ecfdf5;border-color:#6ee7b7">
+        <div class="tht" style="color:var(--s3)">Column 2 — Needs, Knowledge & Skills</div>
+        <div class="fg"><label class="fl" style="font-size:10px">What to bring home / How to implement?</label><textarea id="t2_q1" placeholder="What they'll take home..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Knowledge needed / How to learn it?</label><textarea id="t2_q2" placeholder="Knowledge needs and approach..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">When should US be present?</label><textarea id="t2_q3" placeholder="US perspective moments..." oninput="autosave()"></textarea></div>
+      </div>
+      <div class="thb" style="background:#fffbeb;border-color:#fcd34d">
+        <div class="tht" style="color:#92400e">Column 3 — Behaviors, Experience & Impact</div>
+        <div class="fg"><label class="fl" style="font-size:10px">What to experience / What tools needed?</label><textarea id="t3_q1" placeholder="Experience design and tools..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">New behaviors / How to implement?</label><textarea id="t3_q2" placeholder="Target behaviors and implementation..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">When should IT be present?</label><textarea id="t3_q3" placeholder="IT perspective moments..." oninput="autosave()"></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ STEP 6 ══════ -->
+<section class="page" id="step6">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--s6)">6</div>
+    <div class="smeta">
+      <div class="seyebrow" style="color:var(--s6)">Execute & Facilitate the Learning Journey</div>
+      <div class="stitle">Deliver</div>
+      <div class="sdesc">Plan for seamless delivery and capture arch feedback after each session to continuously improve.</div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Step 6</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="printStep(6)">🖨 Print this step</button>
+      <button class="exp-btn exp-summary" onclick="showSummary()">📄 Full Summary</button>
+      <button class="exp-btn exp-pdf" onclick="printPage()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div class="ai-bar" id="aib6">
+    <div class="ab-top"><span class="ab-lbl">✦ AI Assist — Step 6: Deliver</span>
+      <div class="ab-btns"><button class="ab-btn ab-gen" onclick="stepAI(6)">Generate suggestions</button><button class="ab-btn ab-clr" onclick="clrAI(6)">Clear</button></div>
+    </div>
+    <div class="ai-out" id="aio6"></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s6)">🚀 Delivery Planning</div>
+    <div class="g2">
+      <div class="fg fwrap"><label class="fl">What Is Needed for a Seamless Delivery?</label>
+        <textarea id="seamlessDelivery" class="tall" placeholder="All resources, tech, logistics, and conditions needed..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('seamlessDelivery','What is needed for seamless delivery of a corporate learning program')">✦ Suggest</button></div>
+      <div class="fg fwrap"><label class="fl">Who Needs to Be Involved?</label>
+        <textarea id="whoInvolved" class="tall" placeholder="All people, roles, and stakeholders needed for delivery..." oninput="autosave()"></textarea>
+        <button class="fai" onclick="fai('whoInvolved','Who needs to be involved in delivering a corporate learning experience')">✦ Suggest</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle" style="color:var(--s6)">🔁 Arch Feedback — After Delivery</div>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Fill this in after each delivery using the Set / Hold / Land framework.</p>
+    <div class="archg">
+      <div class="archb set">
+        <div class="archt" style="color:var(--s1)">📣 Set the Arch</div>
+        <div class="fg"><label class="fl" style="font-size:10px">What's working (& not) when you SET?<br><em style="font-weight:400;text-transform:none">(e.g. facilitation & leadership)</em></label><textarea id="set_working" placeholder="Working... / Not working..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Advice for next time when SETTING</label><textarea id="set_advice" placeholder="For next time..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Notes</label><textarea id="set_notes" placeholder="Other notes..." oninput="autosave()"></textarea></div>
+      </div>
+      <div class="archb hold">
+        <div class="archt" style="color:#92400e">🔥 Hold the Arch</div>
+        <div class="fg"><label class="fl" style="font-size:10px">What's working (& not) when you HOLD?<br><em style="font-weight:400;text-transform:none">(e.g. sensing & mirroring)</em></label><textarea id="hold_working" placeholder="Working... / Not working..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Advice for next time when HOLDING</label><textarea id="hold_advice" placeholder="For next time..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Notes</label><textarea id="hold_notes" placeholder="Other notes..." oninput="autosave()"></textarea></div>
+      </div>
+      <div class="archb land">
+        <div class="archt" style="color:var(--s3)">🏁 Land the Arch</div>
+        <div class="fg"><label class="fl" style="font-size:10px">What's working (& not) when you LAND?<br><em style="font-weight:400;text-transform:none">(e.g. framing reflection)</em></label><textarea id="land_working" placeholder="Working... / Not working..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Advice for next time when LANDING</label><textarea id="land_advice" placeholder="For next time..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl" style="font-size:10px">Notes</label><textarea id="land_notes" placeholder="Other notes..." oninput="autosave()"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcta">
+    <div style="font-size:28px">🎉</div>
+    <h2>Journey Design Complete!</h2>
+    <p>All six steps are done. Export a full printable summary of your learning journey map.</p>
+    <div class="fcta-btns">
+      <button class="fcta-btn" onclick="showSummary()" style="background:var(--gold);color:var(--dark)">📄 View Full Summary</button>
+      <button class="fcta-btn" onclick="printPage()" style="background:#fff;color:var(--dark)">🖨 Print / PDF</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SUMMARY ══════ -->
+<section class="page" id="summaryPage">
+  <div class="shdr">
+    <div class="sbadge" style="background:var(--dark)">★</div>
+    <div class="smeta">
+      <div class="seyebrow">Complete Map</div>
+      <div class="stitle">Design Companion — Full Summary</div>
+      <div class="sdesc" id="sumLine">Your completed learning journey map.</div>
+    </div>
+    <button class="hbtn" onclick="hideSummary()" style="background:var(--dark);border:1px solid rgba(255,255,255,.3);color:#fff;white-space:nowrap">← Back to Edit</button>
+  </div>
+  <div class="export-bar">
+    <span class="export-bar-label">📤 Export Summary</span>
+    <div class="export-btns">
+      <button class="exp-btn exp-print" onclick="window.print()">🖨 Print Summary</button>
+      <button class="exp-btn exp-pdf" onclick="window.print()">⬇ Save as PDF</button>
+    </div>
+  </div>
+  <div id="sumContent"></div>
+  <div style="text-align:center;margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <button class="hbtn hbtn-teal" onclick="window.print()" style="padding:10px 24px;font-size:13px">🖨 Print / Save as PDF</button>
+    <button class="hbtn" onclick="hideSummary()" style="padding:10px 24px;font-size:13px;background:var(--dark);border:none;color:#fff">← Back to Edit</button>
+  </div>
+</section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<footer class="nav" id="navBar">
+  <div class="ninfo">Step <strong id="navNum">1</strong> of <strong>6</strong></div>
+  <div class="nbtns">
+    <button class="nbtn nprev" id="navPrev" onclick="prev()" style="display:none">← Previous</button>
+    <button class="nbtn nnext" id="navNext" onclick="next()">Next Step →</button>
+    <button class="nbtn nsum" id="navSum" onclick="showSummary()" style="display:none">View Summary →</button>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let cur = 1;
+let tps = [];      // array of touchpoint ID strings
+let saveTimer = null;
+let printingStep = null; // which step is being single-printed
+let aiCfg = { enabled:false, provider:'claude', key:'', step:true, field:true };
+
+const JTR = [
+  { id:'attitude',       label:'Attitude & Emotions' },
+  { id:'approaches',     label:'Approaches, Tools, Systems' },
+  { id:'action',         label:'Action' },
+  { id:'jtouchpoints',   label:'Touchpoints' },
+  { id:'channels',       label:'Channels & Communication' },
+  { id:'risks',          label:'Risks' },
+  { id:'responsibility', label:'Responsibility' },
+];
+const JTC = ['excitement','entry','engage','exit','extension'];
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildJT();
+  loadAICfg();
+  loadData();   // loads tps array and all field values
+  updateNav();
+  updateTabs();
+  applyAI();
+});
+
+// ═══════════════════════════════════════════
+// JOURNEY TABLE BUILD
+// ═══════════════════════════════════════════
+function buildJT() {
+  const tbody = document.getElementById('jtBody');
+  tbody.innerHTML = '';
+  JTR.forEach(row => {
+    const tr = document.createElement('tr');
+    let html = `<td class="rlbl">${row.label}</td>`;
+    JTC.forEach(col => {
+      html += `<td><textarea id="jt_${row.id}_${col}" placeholder="..." oninput="autosave()"></textarea></td>`;
+    });
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══════════════════════════════════════════
+// TOUCHPOINTS  ← FIX: render first, then restore values
+// ═══════════════════════════════════════════
+function addTP() {
+  const id = 'tp_' + Date.now();
+  tps.push(id);
+  renderTPs();
+  autosave();
+}
+
+function removeTP(id) {
+  tps = tps.filter(t => t !== id);
+  renderTPs();
+  autosave();
+}
+
+function renderTPs() {
+  const container = document.getElementById('tpCont');
+  container.innerHTML = '';
+  tps.forEach((id, i) => {
+    const div = document.createElement('div');
+    div.className = 'tpc';
+    div.innerHTML = `
+      <div class="tph">
+        <span class="tpn">Touchpoint ${i + 1}</span>
+        ${tps.length > 1 ? `<button class="tprem" onclick="removeTP('${id}')">✕ Remove</button>` : ''}
+      </div>
+      <div class="g3" style="gap:10px;margin-bottom:10px">
+        <div class="fg"><label class="fl">Type / Name</label>
+          <input type="text" id="${id}_type" placeholder="e.g. Leader Orientation, Self-paced Module, Workshop, Go-Do..." oninput="autosave()"></div>
+        <div class="fg"><label class="fl">Timing / Duration</label>
+          <input type="text" id="${id}_timing" placeholder="e.g. Week 1, 60 min, Before Session 2..." oninput="autosave()"></div>
+        <div class="fg"><label class="fl">Format</label>
+          <input type="text" id="${id}_format" placeholder="e.g. Self-paced, vILT, F2F, Go-Do, Leader-led..." oninput="autosave()"></div>
+      </div>
+      <div class="g3" style="gap:10px">
+        <div class="fg"><label class="fl">Learning Objectives</label>
+          <textarea id="${id}_objectives" placeholder="What will learners be able to do after this touchpoint?" oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl">Key Activities & Content</label>
+          <textarea id="${id}_activities" placeholder="What happens? Exercises, content, tools..." oninput="autosave()"></textarea></div>
+        <div class="fg"><label class="fl">How Will You Land It?</label>
+          <textarea id="${id}_landing" placeholder="How do you close and measure this touchpoint?" oninput="autosave()"></textarea></div>
+      </div>`;
+    container.appendChild(div);
+  });
+  // ← FIX: restore saved values immediately after DOM is built
+  restoreAllFields();
+}
+
+// ═══════════════════════════════════════════
+// SAVE & LOAD  ← FIX: unified restore, no guard on !el.value
+// ═══════════════════════════════════════════
+function autosave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const data = {};
+    document.querySelectorAll('input[type=text], textarea').forEach(el => {
+      if (el.id) data[el.id] = el.value;
+    });
+    data['__tps__'] = JSON.stringify(tps);
+    try { localStorage.setItem('hive_dc', JSON.stringify(data)); } catch(e) {}
+    const pill = document.getElementById('savePill');
+    pill.classList.add('show');
+    setTimeout(() => pill.classList.remove('show'), 1600);
+  }, 600);
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('hive_dc');
+    if (!raw) {
+      // First load: add one default touchpoint
+      tps = ['tp_default'];
+      renderTPs();
+      return;
+    }
+    const data = JSON.parse(raw);
+
+    // 1. Restore touchpoint IDs and render their DOM
+    if (data['__tps__']) {
+      const saved = JSON.parse(data['__tps__']);
+      if (Array.isArray(saved) && saved.length > 0) {
+        tps = saved;
+      } else {
+        tps = ['tp_default'];
+      }
+    } else {
+      tps = ['tp_default'];
+    }
+    renderTPs(); // builds TP DOM
+
+    // 2. Restore ALL field values (static + dynamic TP fields)
+    // renderTPs already called restoreAllFields, but we call the full restore here
+    // to also fill static fields. We pass data directly to avoid re-reading localStorage.
+    Object.entries(data).forEach(([key, val]) => {
+      if (key === '__tps__') return;
+      const el = document.getElementById(key);
+      if (el) el.value = val;
+    });
+  } catch(e) {
+    tps = ['tp_default'];
+    renderTPs();
+  }
+}
+
+// ← FIX: separate restore function used after renderTPs
+function restoreAllFields() {
+  try {
+    const raw = localStorage.getItem('hive_dc');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([key, val]) => {
+      if (key === '__tps__') return;
+      const el = document.getElementById(key);
+      if (el) el.value = val; // always overwrite, no !el.value guard
+    });
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION  ← FIX: updateTabs always called
+// ═══════════════════════════════════════════
+function go(n) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('step' + n);
+  if (page) page.classList.add('active');
+  cur = n;
+  updateNav();
+  updateTabs();
+  document.getElementById('navBar').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function next() { if (cur < 6) go(cur + 1); }
+function prev() { if (cur > 1) go(cur - 1); }
+
+function updateNav() {
+  document.getElementById('navNum').textContent = cur;
+  document.getElementById('navPrev').style.display = cur > 1 ? 'block' : 'none';
+  document.getElementById('navNext').style.display = cur < 6 ? 'block' : 'none';
+  document.getElementById('navSum').style.display  = cur === 6 ? 'block' : 'none';
+}
+
+// ← FIX: handles 'summary' data-s value correctly
+function updateTabs() {
+  document.querySelectorAll('.tab[data-s]').forEach(tab => {
+    const s = tab.dataset.s;
+    tab.classList.remove('active', 'done');
+    if (s === String(cur)) {
+      tab.classList.add('active');
+    } else if (s !== 'summary' && parseInt(s) < cur) {
+      tab.classList.add('done');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+// SUMMARY  ← FIX: hideSummary calls updateTabs
+// ═══════════════════════════════════════════
+function showSummary() {
+  const proj  = document.getElementById('projectName').value  || 'Untitled Project';
+  const title = document.getElementById('journeyTitle').value || 'Untitled Journey';
+  document.getElementById('sumLine').textContent = `${title} — ${proj}`;
+
+  const stepDefs = [
+    { n:1, c:'var(--s1)', label:'Goals & Content: Define', fields:[
+      ['Learning Journey Title','journeyTitle'],['Project / Client','projectName'],
+      ['AM Name','amName'],['Client Stakeholder','clientStakeholder'],
+      ['Organizational Goals','orgGoals'],['Key Business Results','bizResults'],
+      ['Critical On-the-Job Behaviors','jobBehaviors'],['Critical Enablers','criticalEnablers'],
+      ['Targeted Experience','targetedExp'],['Learning Culture Impact','learningCulture'],
+      ['Learner Persona — Role','personaRole'],['Learner Persona — Challenges','personaChallenges'],
+      ['Learner Persona — Environment','personaEnv'],['Learner Persona — Focus','personaFocus'],
+      ['Learner Persona — Culture','personaCulture'],['Learner Persona — Preferences','personaPrefs'],
+    ]},
+    { n:2, c:'var(--s2)', label:'Plan & Tactics: The Learning', fields:[
+      ['Anchor to Purpose','anchorPurpose'],['Define Outcomes','defineOutcomes'],
+      ['Build the Right Journey','buildJourney'],['Contextualize','contextualize'],
+      ['Call to Adventure','callAdventure'],['Set Context','setContext'],
+      ['Sustain Learning','sustainLearning'],['How Will You Land?','howLand'],
+    ], extra: jtSummary },
+    { n:3, c:'var(--s3)', label:'Concepting: Design the Journey', fields:[
+      ['SME Names','smeNames'],['PL/Dev Team','plDevTeam'],
+      ['Me — Individual','meModality'],['Us — Group','usModality'],['It — Leader-Led','itModality'],
+      ['Modalities','learningModalities'],['Frameworks & Methods','frameworks'],
+      ['Exercises','exercises'],['Transitions','transitions'],['Facilitation Advice','facilitationAdvice'],
+    ], extra: ctSummary },
+    { n:4, c:'var(--s4)', label:'Design the Experience: Journey Visualization', fields:[
+      ['Setting the Arch','settingArch'],['Holding the Arch','holdingArch'],['Landing the Arch','landingArch'],
+    ], extra: tpSummary },
+    { n:5, c:'var(--s5)', label:"From the Learner's Perspective: Review Design", fields:[
+      ['YOU','hj_you'],['NEED','hj_need'],['GO','hj_go'],['SEARCH','hj_search'],
+      ['FIND','hj_find'],['TAKE','hj_take'],['RETURN','hj_return'],['CHANGE','hj_change'],
+      ['Thirds — Learner Start/Mindset','t1_q1'],['Thirds — Mindsets','t1_q2'],['Thirds — ME','t1_q3'],
+      ['Thirds — Bring Home','t2_q1'],['Thirds — Knowledge','t2_q2'],['Thirds — US','t2_q3'],
+      ['Thirds — Experience/Tools','t3_q1'],['Thirds — Behaviors','t3_q2'],['Thirds — IT','t3_q3'],
+    ]},
+    { n:6, c:'var(--s6)', label:'Execute & Facilitate: Deliver', fields:[
+      ['Seamless Delivery','seamlessDelivery'],['Who to Involve','whoInvolved'],
+      ['Set — Working/Not','set_working'],['Set — Advice','set_advice'],['Set — Notes','set_notes'],
+      ['Hold — Working/Not','hold_working'],['Hold — Advice','hold_advice'],['Hold — Notes','hold_notes'],
+      ['Land — Working/Not','land_working'],['Land — Advice','land_advice'],['Land — Notes','land_notes'],
+    ]},
+  ];
+
+  let html = '';
+  stepDefs.forEach(step => {
+    const fieldsHtml = step.fields.map(([lbl, id]) => {
+      const el = document.getElementById(id);
+      const val = el ? el.value.trim() : '';
+      return `<div class="sf">
+        <div class="sfl">${lbl}</div>
+        <div class="sfv">${val ? eh(val) : '<em style="color:#ccc">—</em>'}</div>
+      </div>`;
+    }).join('');
+    const extraHtml = step.extra ? step.extra() : '';
+    html += `<div class="sc">
+      <span class="sbadge2" style="background:${step.c}">Step ${step.n}</span>
+      <div class="stitle2">${step.label}</div>
+      ${fieldsHtml}${extraHtml}
+    </div>`;
+  });
+
+  document.getElementById('sumContent').innerHTML = html;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('summaryPage').classList.add('active');
+  document.getElementById('navBar').style.display = 'none';
+  // ← FIX: mark summary tab active
+  document.querySelectorAll('.tab[data-s]').forEach(t => {
+    t.classList.remove('active', 'done');
+    if (t.dataset.s === 'summary') t.classList.add('active');
+    else if (t.dataset.s !== 'summary' && parseInt(t.dataset.s) <= 6) t.classList.add('done');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideSummary() {
+  document.getElementById('summaryPage').classList.remove('active');
+  document.getElementById('step' + cur).classList.add('active');
+  document.getElementById('navBar').style.display = 'flex';
+  updateTabs(); // ← FIX: restore correct tab highlight
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════
+// PRINT FUNCTIONS
+// ═══════════════════════════════════════════
+function printPage() {
+  // Ensure summary is showing, then print
+  showSummary();
+  setTimeout(() => window.print(), 300);
+}
+
+// Print a single step: temporarily inject a print-only style
+function printStep(n) {
+  // Build a minimal printable HTML of the current step
+  const stepEl = document.getElementById('step' + n);
+  if (!stepEl) return;
+
+  // Gather the inner HTML of the step
+  const title = document.getElementById('journeyTitle').value || 'Learning Journey';
+  const proj  = document.getElementById('projectName').value  || '';
+
+  // Open a new window with just this step
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <title>Step ${n} — ${title}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'DM Sans',sans-serif;font-size:13px;color:#1a1a1a;padding:2cm;background:#fff}
+      h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px}
+      .meta{font-size:11px;color:#888;margin-bottom:24px;letter-spacing:1px;text-transform:uppercase}
+      .card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:18px;margin-bottom:14px;page-break-inside:avoid}
+      .ctitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#555;border-bottom:1px solid #ddd;padding-bottom:8px;margin-bottom:12px}
+      .fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#777;margin-bottom:3px;display:block}
+      .fv{font-size:13px;line-height:1.6;margin-bottom:12px;white-space:pre-wrap;color:#222}
+      .fv.empty{color:#ccc;font-style:italic}
+      .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+      table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+      th{background:#1A1A2E;color:#fff;padding:6px 8px;text-align:left}
+      td{padding:6px 8px;border:1px solid #ddd;vertical-align:top}
+      td:first-child{background:#f5f5f5;font-weight:600}
+      .tp-block{border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid #4C3480}
+      .tp-title{font-weight:700;color:#4C3480;margin-bottom:8px;font-size:13px}
+      @page{margin:1.2cm}
+    </style>
+  </head><body>`);
+
+  win.document.write(`<h1>Step ${n}: ${getStepLabel(n)}</h1>`);
+  win.document.write(`<div class="meta">${title}${proj ? ' — ' + proj : ''}</div>`);
+
+  // Render step content
+  win.document.write(buildStepPrintHTML(n));
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 400);
+}
+
+function getStepLabel(n) {
+  return ['','Define','The Learning','Design the Journey','Journey Visualization','Review Design','Deliver'][n] || '';
+}
+
+function buildStepPrintHTML(n) {
+  let html = '';
+  const field = (label, id) => {
+    const el = document.getElementById(id);
+    const val = el ? el.value.trim() : '';
+    return `<div>
+      <span class="fl">${label}</span>
+      <div class="fv${val ? '' : ' empty'}">${val ? eh(val) : '—'}</div>
+    </div>`;
+  };
+
+  if (n === 1) {
+    html += `<div class="card"><div class="ctitle">Project Information</div>
+      <div class="g2">${field('AM Name','amName')}${field('Client / Project','projectName')}${field('Client Stakeholder','clientStakeholder')}${field('Journey Title','journeyTitle')}</div></div>
+    <div class="card"><div class="ctitle">Core Curriculum Impact Map</div>
+      ${field('Organizational Goals','orgGoals')}${field('Key Business Results','bizResults')}${field('Critical On-the-Job Behaviors','jobBehaviors')}
+      <div class="g2">${field('Critical Enablers','criticalEnablers')}${field('Targeted Experience','targetedExp')}</div>
+      ${field('Learning Culture Impact','learningCulture')}</div>
+    <div class="card"><div class="ctitle">Learner Persona</div>
+      <div class="g2">${field('Role & Responsibilities','personaRole')}${field('Challenges & Needs','personaChallenges')}${field('Work Environment','personaEnv')}${field('Focus of Intervention','personaFocus')}</div>
+      ${field('Current Learning Culture','personaCulture')}${field('Learning Preferences','personaPrefs')}</div>`;
+  } else if (n === 2) {
+    html += `<div class="card"><div class="ctitle">Journey Phase Matrix</div>${jtSummaryPrint()}</div>
+    <div class="card"><div class="ctitle">Purpose of the Journey</div>
+      <div class="g2">${field('Anchor to Purpose','anchorPurpose')}${field('Define Outcomes','defineOutcomes')}${field('Build the Right Journey','buildJourney')}${field('Contextualize','contextualize')}${field('Call to Adventure','callAdventure')}${field('Set Context','setContext')}${field('Sustain Learning','sustainLearning')}${field('How Will You Land?','howLand')}</div></div>`;
+  } else if (n === 3) {
+    html += `<div class="card"><div class="ctitle">Team</div><div class="g3">${field('SME Names','smeNames')}${field('PL/Dev Team','plDevTeam')}${field('Client Stakeholder','s3Stakeholder')}</div></div>
+    <div class="card"><div class="ctitle">Individual vs Group vs Leader-Led</div>
+      <div class="g3">${field('Me — Individual','meModality')}${field('Us — Group','usModality')}${field('It — Leader-Led','itModality')}</div></div>
+    <div class="card"><div class="ctitle">Modalities, Methods & Frameworks</div>
+      <div class="g2">${field('Learning Modalities','learningModalities')}${field('Frameworks & Methods','frameworks')}${field('Exercises','exercises')}${field('Transitions','transitions')}</div>
+      ${field('Facilitation Advice','facilitationAdvice')}</div>
+    <div class="card"><div class="ctitle">Content Components</div>${ctSummaryPrint()}</div>`;
+  } else if (n === 4) {
+    html += `<div class="card"><div class="ctitle">Learning Journey Touchpoints</div>${tpSummaryPrint()}</div>
+    <div class="card"><div class="ctitle">Overall Journey Arc</div>
+      <div class="g3">${field('Setting the Arch','settingArch')}${field('Holding the Arch','holdingArch')}${field('Landing the Arch','landingArch')}</div></div>`;
+  } else if (n === 5) {
+    html += `<div class="card"><div class="ctitle">The Learner's Hero Journey</div>
+      <div class="g2">${field('1 — YOU','hj_you')}${field('2 — NEED','hj_need')}${field('3 — GO','hj_go')}${field('4 — SEARCH','hj_search')}${field('5 — FIND','hj_find')}${field('6 — TAKE','hj_take')}${field('7 — RETURN','hj_return')}${field('8 — CHANGE','hj_change')}</div></div>
+    <div class="card"><div class="ctitle">Rule of Thirds</div>
+      <div class="g3">${field('Learner Start/Mindset','t1_q1')}${field('Bring Home / Implement','t2_q1')}${field('Experience / Tools','t3_q1')}${field('Mindsets held / needed','t1_q2')}${field('Knowledge Needs','t2_q2')}${field('New Behaviors','t3_q2')}${field('ME Perspective','t1_q3')}${field('US Perspective','t2_q3')}${field('IT Perspective','t3_q3')}</div></div>`;
+  } else if (n === 6) {
+    html += `<div class="card"><div class="ctitle">Delivery Planning</div>
+      <div class="g2">${field('Seamless Delivery Needs','seamlessDelivery')}${field('Who Needs to Be Involved?','whoInvolved')}</div></div>
+    <div class="card"><div class="ctitle">Arch Feedback</div>
+      <div class="g3"><div><strong>Set the Arch</strong>${field('Working/Not','set_working')}${field('Advice','set_advice')}${field('Notes','set_notes')}</div>
+      <div><strong>Hold the Arch</strong>${field('Working/Not','hold_working')}${field('Advice','hold_advice')}${field('Notes','hold_notes')}</div>
+      <div><strong>Land the Arch</strong>${field('Working/Not','land_working')}${field('Advice','land_advice')}${field('Notes','land_notes')}</div></div></div>`;
+  }
+  return html;
+}
+
+// ═══════════════════════════════════════════
+// SUMMARY HELPERS
+// ═══════════════════════════════════════════
+function jtSummary() {
+  let h = '<div style="margin-top:10px"><div class="sfl">Journey Phase Matrix</div><div style="overflow-x:auto;margin-top:5px">';
+  h += '<table class="stbl"><tr><th>Dimension</th><th>Excitement</th><th>Entry</th><th>Engage</th><th>Exit</th><th>Extension</th></tr>';
+  JTR.forEach(row => {
+    h += `<tr><td>${row.label}</td>`;
+    JTC.forEach(col => {
+      const el = document.getElementById(`jt_${row.id}_${col}`);
+      h += `<td>${eh(el ? el.value.trim() : '')|| '—'}</td>`;
+    });
+    h += '</tr>';
+  });
+  return h + '</table></div></div>';
+}
+
+function jtSummaryPrint() {
+  let h = '<table><tr><th>Dimension</th><th>Excitement</th><th>Entry</th><th>Engage</th><th>Exit</th><th>Extension</th></tr>';
+  JTR.forEach(row => {
+    h += `<tr><td>${row.label}</td>`;
+    JTC.forEach(col => {
+      const el = document.getElementById(`jt_${row.id}_${col}`);
+      h += `<td style="font-size:11px">${eh(el ? el.value.trim() : '') || '—'}</td>`;
+    });
+    h += '</tr>';
+  });
+  return h + '</table>';
+}
+
+function ctSummary() {
+  const rows = [
+    {id:'acquire', l:'🎯 Acquire'},{id:'apply', l:'💪 Apply/Reflect'},
+    {id:'trigger', l:'🔔 Trigger'},{id:'support', l:'🤝 Support'}
+  ];
+  let h = '<div style="margin-top:10px"><div class="sfl">Content Components</div><div style="overflow-x:auto;margin-top:5px">';
+  h += '<table class="stbl"><tr><th>Type</th><th>Contextualize $</th><th>Customize $$</th><th>Develop $$$</th></tr>';
+  rows.forEach(r => {
+    const ctx = getValue(`${r.id}_ctx`), cu = getValue(`${r.id}_cust`), dv = getValue(`${r.id}_dev`);
+    h += `<tr><td>${r.l}</td><td>${eh(ctx)||'—'}</td><td>${eh(cu)||'—'}</td><td>${eh(dv)||'—'}</td></tr>`;
+  });
+  return h + '</table></div></div>';
+}
+
+function ctSummaryPrint() {
+  const rows = [
+    {id:'acquire', l:'Acquire'},{id:'apply', l:'Apply/Reflect'},
+    {id:'trigger', l:'Trigger'},{id:'support', l:'Support'}
+  ];
+  let h = '<table><tr><th>Type</th><th>Contextualize $</th><th>Customize $$</th><th>Develop $$$</th></tr>';
+  rows.forEach(r => {
+    h += `<tr><td>${r.l}</td><td>${eh(getValue(`${r.id}_ctx`))||'—'}</td><td>${eh(getValue(`${r.id}_cust`))||'—'}</td><td>${eh(getValue(`${r.id}_dev`))||'—'}</td></tr>`;
+  });
+  return h + '</table>';
+}
+
+function tpSummary() {
+  let h = '<div style="margin-top:10px"><div class="sfl">Touchpoints</div>';
+  tps.forEach((id, i) => {
+    const v = k => getValue(`${id}_${k}`);
+    h += `<div style="border:1px solid #ddd;border-radius:6px;padding:10px;margin-top:7px;background:#fafafa">
+      <strong>Touchpoint ${i+1}: ${eh(v('type'))||'—'}</strong>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:7px;font-size:12px">
+        <div><strong>Timing:</strong><br>${eh(v('timing'))||'—'}</div>
+        <div><strong>Format:</strong><br>${eh(v('format'))||'—'}</div>
+        <div><strong>Landing:</strong><br>${eh(v('landing'))||'—'}</div>
+        <div><strong>Objectives:</strong><br>${eh(v('objectives'))||'—'}</div>
+        <div style="grid-column:2/-1"><strong>Activities:</strong><br>${eh(v('activities'))||'—'}</div>
+      </div></div>`;
+  });
+  return h + '</div>';
+}
+
+function tpSummaryPrint() {
+  let h = '';
+  tps.forEach((id, i) => {
+    const v = k => getValue(`${id}_${k}`);
+    h += `<div class="tp-block">
+      <div class="tp-title">Touchpoint ${i+1}: ${eh(v('type'))||'—'}</div>
+      <div class="g3">
+        <div><span class="fl">Timing</span><span class="fv">${eh(v('timing'))||'—'}</span></div>
+        <div><span class="fl">Format</span><span class="fv">${eh(v('format'))||'—'}</span></div>
+        <div><span class="fl">Landing</span><span class="fv">${eh(v('landing'))||'—'}</span></div>
+        <div><span class="fl">Objectives</span><span class="fv">${eh(v('objectives'))||'—'}</span></div>
+        <div style="grid-column:2/-1"><span class="fl">Key Activities</span><span class="fv">${eh(v('activities'))||'—'}</span></div>
+      </div></div>`;
+  });
+  return h;
+}
+
+// Helper: get value from DOM element
+function getValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function eh(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// ═══════════════════════════════════════════
+// AI CONFIG
+// ═══════════════════════════════════════════
+function loadAICfg() {
+  try {
+    const s = sessionStorage.getItem('hive_ai');
+    if (s) aiCfg = { ...aiCfg, ...JSON.parse(s) };
+  } catch(e) {}
+}
+
+function openModal() {
+  document.getElementById('togEnabled').checked = aiCfg.enabled;
+  document.getElementById('aiProv').value = aiCfg.provider;
+  document.getElementById('apiKey').value = aiCfg.key;
+  document.getElementById('togStep').checked = aiCfg.step;
+  document.getElementById('togField').checked = aiCfg.field;
+  onTogEnabled();
+  onProvChange();
+  document.getElementById('aiModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('aiModal').classList.remove('open');
+}
+
+function modalOverlayClick(e) {
+  if (e.target === document.getElementById('aiModal')) closeModal();
+}
+
+function onTogEnabled() {
+  document.getElementById('aiExtra').style.display =
+    document.getElementById('togEnabled').checked ? 'block' : 'none';
+}
+
+function onProvChange() {
+  const p = document.getElementById('aiProv').value;
+  document.getElementById('keyLbl').textContent = p === 'claude' ? 'Anthropic API Key' : 'OpenAI API Key';
+  document.getElementById('apiKey').placeholder  = p === 'claude' ? 'sk-ant-...' : 'sk-...';
+  document.getElementById('keyHint').textContent = p === 'claude'
+    ? 'Stored in browser session only. Sent only to api.anthropic.com.'
+    : 'Stored in browser session only. Sent only to api.openai.com.';
+}
+
+function saveConfig() {
+  aiCfg.enabled  = document.getElementById('togEnabled').checked;
+  aiCfg.provider = document.getElementById('aiProv').value;
+  aiCfg.key      = document.getElementById('apiKey').value.trim();
+  aiCfg.step     = document.getElementById('togStep').checked;
+  aiCfg.field    = document.getElementById('togField').checked;
+  try { sessionStorage.setItem('hive_ai', JSON.stringify(aiCfg)); } catch(e) {}
+  closeModal();
+  applyAI();
+}
+
+function applyAI() {
+  const on = aiCfg.enabled;
+  document.getElementById('aiDot').classList.toggle('on', on);
+  document.getElementById('aiLbl').textContent = on
+    ? `AI: ${aiCfg.provider === 'claude' ? 'Claude' : 'ChatGPT'}`
+    : 'AI: Off';
+  for (let i = 1; i <= 6; i++) {
+    const b = document.getElementById(`aib${i}`);
+    if (b) b.classList.toggle('on', on && aiCfg.step);
+  }
+  document.body.classList.toggle('ai-fields', on && aiCfg.field);
+}
+
+// ═══════════════════════════════════════════
+// AI CALLS
+// ═══════════════════════════════════════════
+async function callAI(prompt) {
+  if (!aiCfg.key) throw new Error('No API key set. Click the AI pill in the top bar to configure.');
+  if (aiCfg.provider === 'claude') {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': aiCfg.key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 700,
+        system: "You are an expert learning experience designer using The Hive's Design Companion framework. Give concise, practical, actionable suggestions. Use bullet points. Max 300 words.",
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.map(b => b.text || '').join('') || '';
+  } else {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + aiCfg.key },
+      body: JSON.stringify({
+        model: 'gpt-4o', max_tokens: 700,
+        messages: [
+          { role: 'system', content: "You are an expert learning experience designer using The Hive's Design Companion framework. Give concise, practical, actionable suggestions. Use bullet points. Max 300 words." },
+          { role: 'user', content: prompt }
+        ]
+      })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.choices?.[0]?.message?.content || '';
+  }
+}
+
+async function stepAI(n) {
+  const out = document.getElementById(`aio${n}`);
+  out.classList.add('has');
+  out.innerHTML = '<div class="ai-load"><div class="dots"><span></span><span></span><span></span></div>&nbsp;Generating suggestions…</div>';
+  const ctx = buildStepContext(n);
+  try {
+    const text = await callAI(`I'm working on Step ${n} of The Hive Design Companion. Here's what I've filled in:\n\n${ctx}\n\nGive me 4-5 practical, specific suggestions to strengthen this step.`);
+    out.textContent = text;
+  } catch(e) {
+    out.textContent = '⚠️ ' + e.message;
+  }
+}
+
+function clrAI(n) {
+  const o = document.getElementById(`aio${n}`);
+  o.classList.remove('has');
+  o.innerHTML = '';
+}
+
+async function fai(fieldId, prompt) {
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  const orig = el.value;
+  el.value = '⏳ Generating…';
+  el.disabled = true;
+  try {
+    const full = orig.trim()
+      ? `${prompt}\n\nThe user has already written: "${orig.trim()}"\n\nExpand, improve or suggest alternatives. 3–5 bullet points.`
+      : `${prompt}\n\nProvide 3–5 concise, practical bullet-point suggestions.`;
+    el.value = await callAI(full);
+    autosave();
+  } catch(e) {
+    el.value = orig;
+    alert('AI error: ' + e.message);
+  }
+  el.disabled = false;
+}
+
+function buildStepContext(n) {
+  const map = {
+    1: ['journeyTitle','projectName','orgGoals','bizResults','jobBehaviors','criticalEnablers','learningCulture','personaRole','personaChallenges'],
+    2: ['anchorPurpose','defineOutcomes','buildJourney','contextualize','callAdventure','setContext','sustainLearning','howLand'],
+    3: ['meModality','usModality','itModality','learningModalities','frameworks','exercises','transitions','facilitationAdvice'],
+    4: ['settingArch','holdingArch','landingArch'],
+    5: ['hj_you','hj_need','hj_go','hj_search','hj_find','hj_take','hj_return','hj_change','t1_q1','t1_q2','t2_q1','t3_q2'],
+    6: ['seamlessDelivery','whoInvolved','set_working','hold_working','land_working'],
+  };
+  return (map[n] || [])
+    .map(id => { const v = getValue(id); return v ? `${id}: ${v}` : null; })
+    .filter(Boolean)
+    .join('\n') || '(No content filled in yet)';
+}
+</script>
+</body>
+</html>
